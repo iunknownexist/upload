@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+require('../lib/config');
+
+var app = _interopRequireDefault(require('../lib/app')).default;
+var port = process.env['PORT'] || 3000;
+
+var server = app.listen(port, function() {
+    console.log('Express server listening on port ', port, ' with pid ', process.pid);
+});

@@ -1,0 +1,13 @@
+**/*.json
+**/vendor/*.js
+**/widget/*.js
+**/dist/*.js
+**/assets/*.js
+**/*/*.min.js
+
+**/admin/sections/*.js
+**/admin/base.js
+**/admin/core.js
+**/admin/site.js
+**/datepicker/*.js
+

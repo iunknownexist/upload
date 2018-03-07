@@ -1,0 +1,21 @@
+{
+    "env": {
+        "node": 1,
+        "browser": 0
+    },
+    "rules": {
+        "comma-dangle": [2, "never"],
+        "no-cond-assign": 2,
+        "no-duplicate-case": 2,
+        "no-empty": 2,
+        "no-empty-class": 2,
+        "no-extra-boolean-cast": 2,
+        "no-extra-parens": 0,
+        "no-extra-semi": 2,
+        "no-func-assign": 2,
+        "no-inner-declarations": [2, "functions"],
+        "valid-typeof": [2, ["symbol", "undefined", "object", "boolean", "number", "string", "function"]]
+
+    }
+}
+

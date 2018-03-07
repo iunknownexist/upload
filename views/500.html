@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block css %}
+<style type="text/css">
+    .header-nav {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div>
+        {% if (env == 'dev') %}
+              <pre>
+              {{ error }}
+              </pre>
+        {% else %}
+            <h2>网络繁忙，请稍后再试! 500</h2>
+        {% endif %}
+    </div>
+{% endblock %}

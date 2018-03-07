@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+
+{% block title %} 首页 {% endblock %}
+
+
+{% block css %}
+    {% parent %}
+    <link rel="stylesheet" href="{% static '/css/index.scss' %}"/>
+{% endblock %}
+
+
+{% block body_js %}
+    <script src="{% static '/js/upload.js' %}"></script>
+    <script>
+        (function () {
+            var xhr = tinyFileUpload('#file', {
+                upload: '/upload',
+                data: {
+                    format: 'json',
+                    type: 'arrow'
+                },
+                headers: {
+
+                }
+            });
+
+            document.getElementById('file').addEventListener('change', function (event) {
+                if (typeof xhr === 'object') {
+                    xhr.upload()
+                }
+            });
+
+            document.getElementById('uploadForm').addEventListener('submit', function (event) {
+                event.preventDefault();
+            });
+        })();
+    </script>
+{% endblock %}
+
+
+{% block page %}
+    <h1 align="center">A simple demo - Upload file</h1>
+    <h2 align="center">IE 11</h2>
+
+    <section>
+
+        <form id="uploadForm" method="POST" action="/upload/" enctype="multipart/form-data">
+            <input type="file" id="file" name="file" />
+            <input type="submit" value="上传" />
+        </form>
+
+    </section>
+{% endblock %}
