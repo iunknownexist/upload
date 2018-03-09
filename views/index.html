@@ -13,15 +13,54 @@
 {% block body_js %}
     <script src="{% static '/js/upload.js' %}"></script>
     <script>
+        // 模式弹窗
+        window.dialog = (function () {
+            return {
+                /**
+                 * 是不是要缓存起来，用display的形式
+                 * options: title, time:ms
+                */
+                message: function (options) {
+                    var id = 'message-dialog-' + parseInt(Math.random() * 100)
+                    var ele = document.createElement('div');
+                    ele.id = id;
+                    ele.style = `background-color: rgba(0,0,0,0.65);
+                                position: fixed;
+                                top: 50%; left: 0; right: 0; margin: -100px auto 0;
+                                width: 200px; padding: 40px 20px;
+                                border-radius: 5px;
+                                text-align: center;
+                                color: #fff; font-size: 14px; line-height: 1.231;
+                                word-break: break-word;`
+                    ele.innerHTML = '<span>' + options.title + '</span>'
+                    document.body.appendChild(ele);
+
+                    setTimeout(function () {
+                        document.body.removeChild(ele);
+                    }, (typeof options.time === 'number' ? options.time : 1500));
+                }
+            }
+        })();
+    </script>
+    <script>
         (function () {
             var xhr = tinyFileUpload('#file', {
                 upload: '/upload',
                 data: {
                     format: 'json',
-                    type: 'arrow'
+                    name: 'tester'
                 },
-                headers: {
-
+                headers: {},
+                onError: function (err) {
+                    dialog.message({ title: err, time: 1500 })
+                },
+                onResponse: function (response) {
+                    if (response.status) {
+                        // TO DO
+                        dialog.message({ title: response.url, time: 1000 })
+                    } else {
+                        dialog.message({ title: $_.parseToString(response.err_msg), time: 4000 })
+                    }
                 }
             });
 

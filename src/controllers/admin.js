@@ -44,12 +44,20 @@ router.post('/upload', multipartMiddleware, function (req, res) { // eslint-disa
             if (err) {
                 res.send(JSON.stringify({ status: false, err_msg: '上传失败' }));
             } else {
-                formData['file'] = data;
+                // formData['file'] = data;
                 // 存到本地
-                return res.send(JSON.stringify({
-                    state: true,
-                    url: '/url'
-                }));
+
+                var base64Data = data.replace(/^data:image\/\w+;base64,/, '');;
+                var dataBuffer = new Buffer(base64Data, 'base64');
+
+                // 测试用
+                fs.writeFile(`./files/` + originalFilename, dataBuffer, function (err) {
+                    if (err) {
+                        return res.send(JSON.stringify({ status: false, err_msg: err }))
+                    } else {
+                        return res.send(JSON.stringify({ status: true, url: '/files/' + originalFilename }))
+                    }
+                });
             }
         });
     } else {

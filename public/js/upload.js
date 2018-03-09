@@ -13,6 +13,24 @@ window.$_ = (function () {
 
             return Object.prototype.toString.call(value) === '[object Object]'
         },
+        isFunction: function (value) {
+            return typeof value === 'function';
+        },
+        parseToString: function (value) {
+            if (typeof value === 'string') {
+                return value;
+            }
+
+            if (this.isObject(value)) {
+                return JSON.stringify(value);
+            }
+
+            if (this.isFunction(value)) {
+                return value.toString();
+            }
+
+            return '' + value;
+        },
         // 逻辑有问题
         extend: function (parent, child) {
             var obj = {};
@@ -56,25 +74,15 @@ window.tinyFileUpload = (function () {
         headers: {},
         multiple: false,
         method: 'POST',
+        onError: null,
         //autoUpload: true,
         preview: function (data) {
             console.log('preview', data);
         },
-        onSuccess: function (response) {
-            console.log('onSuccess', response);
-        },
-        onFailure: function (response) {
-            console.log('onFailure', response);
-        },
-        onChange: function () {
-            console.log('onChange');
-        },
-        onProgress: function () {
-            console.log('onProgress');
-        },
-        onAbort: function () {
-            console.log('onAbort');
-        }
+        onResponse: null,
+        onChange: null,
+        onProgress: null,
+        onAbort: null
     };
 
 
@@ -95,13 +103,27 @@ window.tinyFileUpload = (function () {
         var xhr = null;
 
         if (!_ele) {
-            console.log('selector is invalid.');
-            return false;
+            try {
+                throw new TypeError('selector is invalid.');
+            } catch (err) {
+                if ($_.isFunction(_options.onError)) {
+                    _options.onError(err.message);
+                }
+            }
+
+            return;
         }
 
         if (typeof XMLHttpRequest === 'undefined') {
-            console.log('not suppose.');
-            return false;
+            try {
+                throw new TypeError('not suppose.');
+            } catch (err) {
+                if ($_.isFunction(_options.onError)) {
+                    _options.onError(err.message);
+                }
+            }
+
+            return;
         }
 
         xhr = new XMLHttpRequest();
@@ -116,16 +138,17 @@ window.tinyFileUpload = (function () {
         }
 
         xhr.onreadystatechange = function () {
+            var responseText = null;
+
             if (xhr.readyState === 4) {
-                if (xhr.status.toString().indexOf('20') >= 0) {
-                    typeof _options.onSuccess() === 'function' && _options.onSuccess(xhr.responseText);
-                } else {
-                    typeof _options.onFailure() === 'function' && _options.onFailure(xhr.responseText);
+                responseText = xhr.responseText;
+                if ($_.isFunction(_options.onResponse)) {
+                    _options.onResponse($_.isObject(responseText) ? responseText : JSON.parse(responseText));
                 }
             }
         };
 
-        if (typeof _options.onProgress === 'function') {
+        if ($_.isFunction(_options.onProgress)) {
             xhr.upload.onprogress =  _options.onProgress
         }
 
@@ -140,7 +163,7 @@ window.tinyFileUpload = (function () {
         for (var name in _data) {
             if (!_data.hasOwnProperty(name)) { continue; }
             var value = _data[name];
-            if (typeof value === 'function') { continue; }
+            if ($_.isFunction(value)) { continue; }
 
             formData.append(name, value);
         }
